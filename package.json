@@ -7,12 +7,15 @@
     "serve": "vite preview"
   },
   "dependencies": {
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.1",
+    "express-session": "^1.18.1",
     "vue": "^3.2.16",
     "vue-router": "^4.0.12"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.9.3",
-    "vite": "^2.6.4",
-	"mongodb": "latest"
+    "mongodb": "latest",
+    "vite": "^2.6.4"
   }
 }
