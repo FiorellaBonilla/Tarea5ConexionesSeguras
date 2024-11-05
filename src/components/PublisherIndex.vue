@@ -1,7 +1,12 @@
 <template>
-    <div class="row">
-      <div style="margin-top: 5%">
-        <h2>{{ title }}</h2>
+  <div class="row">
+    <div style="margin-top: 5%">
+      <h2>{{ title }}</h2>
+      <div v-if="!isAuthenticated">
+        <Login @login-success="handleLogin" />
+      </div>
+
+      <div v-else>
         <table>
           <thead>
             <tr>
@@ -9,17 +14,17 @@
               <th>Country</th>
               <th>Founded</th>
               <th>Genre</th>
-             <th>Books</th> 
+              <th>Books</th>
               <th class="text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="publisher in publishers" :key="publisher.id">
+            <tr v-for="publisher in publishers" :key="publisher._id">
               <td>{{ publisher.publisher }}</td>
               <td>{{ publisher.country }}</td>
               <td>{{ publisher.founded }}</td>
-              <td>{{ publisher.genere }}</td>
-            <td>
+              <td>{{ publisher.genre }}</td>
+              <td>
                 <ul>
                   <li v-for="book in publisher.books" :key="book.book_id">
                     {{ book.title }}
@@ -39,41 +44,65 @@
         <router-link class="button button-primary" to="/publisher/create">New Publisher</router-link>
       </div>
     </div>
-  </template>
+  </div>
+</template>
+
+<script>
+import Login from './Login.vue'; 
+
+export default {
+  name: "PublisherIndex",
+  components: {
+    Login,
+  },
+  data() {
+    return {
+      title: 'Publisher List',
+      publishers: [],
+      isAuthenticated: false,
+    };
+  },
+  mounted() {
+    
+    const cookies = document.cookie.split(';');
+    this.isAuthenticated = cookies.some(cookie => cookie.trim().startsWith('userid='));
+
   
-  <script>
-  export default {
-    name: "PublisherIndex",
-    data() {
-      return {
-        title: 'Publisher List',
-        publishers: []  
-      };
-    },
-    mounted() {
+    if (this.isAuthenticated) {
       this.allPublishers();
-    },
-    methods: {
-     
-      allPublishers() {
-        fetch(this.url + '/.netlify/functions/publisherFindAll', {
-          headers: { 'Accept': 'application/json' }
-        })
-          .then((response) => response.json())
-          .then((items) => {
-            this.publishers = items; 
-          });
-      },
-      
-      deletePublisher(id) {
-        fetch(this.url + '/.netlify/functions/publisherDelete/' + id, {
-          headers: { 'Content-Type': 'application/json' },
-          method: 'DELETE'
-        }).then(() => {
-          this.allPublishers();  
-        });
-      }
     }
-  };
-  </script>
-  
+  },
+  methods: {
+    handleLogin() {
+      this.isAuthenticated = true;
+      this.allPublishers(); 
+    },
+    allPublishers() {
+      fetch(this.url + '/.netlify/functions/publisherFindAll', {
+        headers: { 'Accept': 'application/json' }
+      })
+        .then((response) => response.json())
+        .then((items) => {
+          this.publishers = items;
+        })
+        .catch((error) => {
+          console.error("Error fetching publishers:", error);
+        });
+    },
+    deletePublisher(id) {
+      fetch(this.url + '/.netlify/functions/publisherDelete/' + id, {
+        headers: { 'Content-Type': 'application/json' },
+        method: 'DELETE'
+      })
+        .then(() => {
+          this.allPublishers(); 
+        })
+        .catch((error) => {
+          console.error("Error deleting publisher:", error);
+        });
+    }
+  }
+};
+</script>
+
+

@@ -1,4 +1,3 @@
-<!-- BookIndex.vue -->
 <template>
   <div class="row">
     <div style="margin-top: 5%">
@@ -6,6 +5,7 @@
       <div v-if="!isAuthenticated">
         <Login @login-success="handleLogin" />
       </div>
+
       <div v-else>
         <table>
           <thead>
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import Login from './Login.vue'; // Asegúrate de importar el componente de inicio de sesión
+import Login from './Login.vue'; 
 
 export default {
   name: "BookIndex",
@@ -51,44 +51,49 @@ export default {
     return {
       title: 'Book List',
       books: [],
-      isAuthenticated: false, // Agregar una propiedad para verificar la autenticación
+      isAuthenticated: false,
     };
   },
   mounted() {
-    this.checkAuthentication(); // Verificar autenticación al montar
-    this.allBooks(); // Cargar todos los libros
+   
+    const cookies = document.cookie.split(';');
+    this.isAuthenticated = cookies.some(cookie => cookie.trim().startsWith('userid='));
+
+
+    if (this.isAuthenticated) {
+      this.allBooks();
+    }
   },
   methods: {
-    checkAuthentication() {
-      // Verifica si la cookie 'userid' está presente
-      this.isAuthenticated = document.cookie.split(';').some(cookie => cookie.trim().startsWith('userid='));
-    },
     handleLogin() {
-      this.isAuthenticated = true; // Cambia el estado de autenticación al iniciar sesión
-      this.allBooks(); // Cargar libros nuevamente si es necesario
+      this.isAuthenticated = true;
+      this.allBooks(); 
     },
     allBooks() {
       fetch(this.url + '/.netlify/functions/bookFindAll', {
         headers: { 'Accept': 'application/json' }
       })
-      .then((response) => response.json())
-      .then((items) => {
-        this.books = items;
-      });
+        .then((response) => response.json())
+        .then((items) => {
+          this.books = items;
+        })
+        .catch((error) => {
+          console.error("Error fetching books:", error);
+        });
     },
     deleteBook(id) {
       fetch(this.url + '/.netlify/functions/bookDelete/' + id, {
         headers: { 'Content-Type': 'application/json' },
         method: 'DELETE'
       })
-      .then(() => {
-        this.allBooks(); // Recargar libros después de eliminar
-      });
+        .then(() => {
+          this.allBooks(); 
+        })
+        .catch((error) => {
+          console.error("Error deleting book:", error);
+        });
     }
   }
 };
 </script>
 
-<style>
-/* Estilos para el componente de libros */
-</style>
