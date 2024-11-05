@@ -1,29 +1,30 @@
-const cookie = require('cookie');
+// login.js
+document.getElementById('loginForm').onsubmit = function(e) {
+  e.preventDefault(); 
 
-exports.handler = async (event) => {
-  const { username, password } = JSON.parse(event.body || '{}');
+  const username = document.getElementById('username').value;
+  const password = document.getElementById('password').value;
 
-  // Credenciales de ejemplo
-  const myUsername = 'user11';
-  const myPassword = 'mypassword';
-
-  if (username === myUsername && password === myPassword) {
-    return {
-      statusCode: 200,
+  fetch('/user', {
+      method: 'POST',
       headers: {
-        'Set-Cookie': cookie.serialize('userid', username, {
-          path: '/',
-          maxAge: 86400, // 1 día
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production', // Solo en producción
-        }),
+          'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ message: "Inicio de sesión exitoso." }),
-    };
-  } else {
-    return {
-      statusCode: 401,
-      body: JSON.stringify({ message: 'Usuario o contraseña inválidos' }),
-    };
-  }
+      body: JSON.stringify({ username, password })
+  })
+  .then(response => {
+      if (response.ok) {
+          return response.text(); 
+      }
+      throw new Error('Usuario o contraseña inválidos');
+  })
+  .then(data => {
+
+      console.log(data);
+      window.location.href = '/'; 
+  })
+  .catch(error => {
+      console.error('Error:', error);
+      alert(error.message); 
+  });
 };
