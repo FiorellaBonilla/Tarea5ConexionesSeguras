@@ -1,30 +1,29 @@
-// login.js
-document.getElementById('loginForm').onsubmit = function(e) {
-  e.preventDefault(); 
+const cookie = require('cookie');
 
-  const myusername = document.getElementById('myusername').value;
-  const mypassword = document.getElementById('mypassword').value;
+exports.handler = async (event) => {
+  const { username, password } = JSON.parse(event.body || '{}');
 
-  fetch('/user', {
-      method: 'POST',
+
+  const myUsername = 'user1';
+  const myPassword = 'mypassword';
+
+  if (username === myUsername && password === myPassword) {
+    return {
+      statusCode: 200,
       headers: {
-          'Content-Type': 'application/json'
+        'Set-Cookie': cookie.serialize('userid', username, {
+          path: '/',
+          maxAge: 86400, 
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production', 
+        }),
       },
-      body: JSON.stringify({ username, password })
-  })
-  .then(response => {
-      if (response.ok) {
-          return response.text(); 
-      }
-      throw new Error('Usuario o contraseña inválidos');
-  })
-  .then(data => {
-
-      console.log(data);
-      window.location.href = '/'; 
-  })
-  .catch(error => {
-      console.error('Error:', error);
-      alert(error.message); 
-  });
+      body: JSON.stringify({ message: "Inicio de sesión exitoso." }),
+    };
+  } else {
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ message: 'Usuario o contraseña inválidos' }),
+    };
+  }
 };
