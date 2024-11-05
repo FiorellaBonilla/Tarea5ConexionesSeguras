@@ -2,10 +2,10 @@
   <div class="row">
     <div style="margin-top: 5%">
       <h2>{{ title }}</h2>
+
       <div v-if="!isAuthenticated">
         <Login @login-success="handleLogin" />
       </div>
-
       <div v-else>
         <table>
           <thead>
@@ -39,7 +39,10 @@
             </tr>
           </tbody>
         </table>
+
         <router-link class="button button-primary" to="/author/create">New Author</router-link>
+    
+        <button @click="logout" class="button logout-button">Logout</button>
       </div>
     </div>
   </div>
@@ -61,11 +64,11 @@ export default {
     };
   },
   mounted() {
-   
+
     const cookies = document.cookie.split(';');
     this.isAuthenticated = cookies.some(cookie => cookie.trim().startsWith('userid='));
 
-   
+
     if (this.isAuthenticated) {
       this.allAuthors();
     }
@@ -98,9 +101,26 @@ export default {
         .catch((error) => {
           console.error("Error deleting author:", error);
         });
+    },
+    logout() {
+ 
+      document.cookie = 'userid=; Max-Age=0; path=/';
+
+  
+      this.isAuthenticated = false;
+      this.authors = [];
     }
   }
 };
 </script>
 
-
+<style scoped>
+.logout-button {
+  margin-top: 10px;
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+</style>

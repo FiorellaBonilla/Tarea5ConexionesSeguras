@@ -3,12 +3,9 @@
     <div style="margin-top: 5%">
       <h2>{{ title }}</h2>
 
-      <!-- Si no está autenticado, muestra el componente Login -->
       <div v-if="!isAuthenticated">
         <Login @login-success="handleLogin" />
       </div>
-
-      <!-- Si está autenticado, muestra la lista de libros y el botón de Logout -->
       <div v-else>
         <table>
           <thead>
@@ -37,10 +34,9 @@
           </tbody>
         </table>
         
-        <!-- Botón para agregar nuevo libro -->
+   
         <router-link class="button button-primary" to="/book/create">New</router-link>
         
-        <!-- Botón de Logout -->
         <button @click="logout" class="button logout-button">Logout</button>
       </div>
     </div>
@@ -63,11 +59,11 @@ export default {
     };
   },
   mounted() {
-    // Verificar si existe una cookie de autenticación
+
     const cookies = document.cookie.split(';');
     this.isAuthenticated = cookies.some(cookie => cookie.trim().startsWith('userid='));
 
-    // Si el usuario está autenticado, obtener todos los libros
+
     if (this.isAuthenticated) {
       this.allBooks();
     }
@@ -102,10 +98,7 @@ export default {
         });
     },
     logout() {
-      // Borrar la cookie de autenticación
       document.cookie = 'userid=; Max-Age=0; path=/';
-
-      // Cambiar el estado de autenticación y limpiar la lista de libros
       this.isAuthenticated = false;
       this.books = [];
     }
