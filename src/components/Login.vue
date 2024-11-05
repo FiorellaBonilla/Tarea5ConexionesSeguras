@@ -30,7 +30,7 @@ export default {
       const data = await response.json();
 
       if (response.ok) {
-        // Redirigir o notificar el inicio de sesión exitoso
+      
         this.$emit('login-success');
       } else {
         this.errorMessage = data.message || 'Credenciales incorrectas';
