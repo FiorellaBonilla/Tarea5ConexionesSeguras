@@ -2,8 +2,8 @@
 document.getElementById('loginForm').onsubmit = function(e) {
   e.preventDefault(); 
 
-  const username = document.getElementById('username').value;
-  const password = document.getElementById('password').value;
+  const myusername = document.getElementById('myusername').value;
+  const mypassword = document.getElementById('mypassword').value;
 
   fetch('/user', {
       method: 'POST',
