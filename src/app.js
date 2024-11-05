@@ -1,21 +1,21 @@
 const express = require('express');
-const cookieParser = require("cookie-parser");
+const cookieParser = require('cookie-parser');
 const sessions = require('express-session');
 
 const app = express();
 const PORT = 4000;
 
-// username and password
+// Credenciales de ejemplo
 const myusername = 'user1';
 const mypassword = 'mypassword';
 
-// a variable to save a session
-var session;
+// Variable para guardar la sesión
+let session;
 
-// creating 24 hours from milliseconds
+// Duración de la cookie (1 día)
 const oneDay = 1000 * 60 * 60 * 24;
 
-// session middleware
+// Middleware de sesión
 app.use(sessions({
     secret: "thisismysecrctekeyfhrgfgrfrty84fwir767",
     saveUninitialized: true,
@@ -23,39 +23,42 @@ app.use(sessions({
     resave: false
 }));
 
-// parsing the incoming data
+// Middleware para analizar datos entrantes
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// serving public file
+// Middleware para servir archivos estáticos
 app.use(express.static(__dirname));
 
-// cookie parser middleware
+// Middleware de cookie-parser
 app.use(cookieParser());
 
+// Ruta principal
 app.get('/', (req, res) => {
     session = req.session;
     if (session.userid) {
-        res.send("Welcome User <a href='/logout'>click to logout</a>");
+        res.send(`Bienvenido Usuario <a href='/logout'>click para cerrar sesión</a>`);
     } else {
         res.sendFile('views/login.html', { root: __dirname });
     }
 });
 
+// Ruta para manejar el inicio de sesión
 app.post('/user', (req, res) => {
     if (req.body.username === myusername && req.body.password === mypassword) {
         session = req.session;
         session.userid = req.body.username;
-        console.log(req.session);
-        res.send(`Hey there, welcome <a href='/logout'>click to logout</a>`);
+        res.send(`Hola, bienvenido <a href='/logout'>click para cerrar sesión</a>`);
     } else {
-        res.send('Invalid username or password');
+        res.send('Usuario o contraseña inválidos');
     }
 });
 
+// Ruta para cerrar sesión
 app.get('/logout', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
 
-app.listen(PORT, () => console.log(`Server Running at port ${PORT}`));
+// Iniciar el servidor
+app.listen(PORT, () => console.log(`Servidor en funcionamiento en el puerto ${PORT}`));

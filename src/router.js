@@ -9,6 +9,8 @@ import AuthorDetails from "./components/AuthorDetails.vue";
 import PublisherIndex from "./components/PublisherIndex.vue";
 import PublisherDetails from "./components/PublisherDetails.vue";
 
+
+import Login from "./components/Login.vue";
 const routes = [
   { path: "/", component: Home },
 	
@@ -44,6 +46,10 @@ const routes = [
     component: PublisherDetails, props: {create:true} },
   { path: "/publisher/delete/:id", 
     component: PublisherDetails, props: {delete:true} },
+
+
+    { path: "/login", component: Login },
+
 ];
 
 const history = createWebHistory();
